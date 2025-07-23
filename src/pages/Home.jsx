@@ -9,10 +9,12 @@ import Blog from '../components/ui/Blog';
 import ContactForm from '../components/ui/ContactForm';
 import Footer from '../components/layout/Footer';
 import SmoothScroll from '../components/utils/SmoothScroll';
+import ParticleBackground from '../components/ui/ParticleBackground';
 
 const Home = () => {
   return (
     <>
+      <ParticleBackground />
       <SmoothScroll />
       <Header />
       <main>
