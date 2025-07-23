@@ -59,7 +59,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <motion.h3 
-              className="text-2xl font-bold mb-4 gradient-text"
+              className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
               whileHover={{ scale: 1.05 }}
             >
               Portfolio
@@ -103,7 +103,7 @@ const Footer = () => {
 
         {/* Newsletter Section */}
         <motion.div
-          className="glass rounded-2xl p-8 mb-12"
+          className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -123,7 +123,7 @@ const Footer = () => {
                 className="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <motion.button
-                className="btn-primary px-6 py-3"
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -163,7 +163,7 @@ const Footer = () => {
               </motion.a>
               <motion.button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="glass rounded-full p-2 hover:bg-white/10 transition-colors duration-300"
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-full p-2 hover:bg-white/10 transition-colors duration-300"
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >

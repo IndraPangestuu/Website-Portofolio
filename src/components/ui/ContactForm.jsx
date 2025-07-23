@@ -1,40 +1,45 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState("");
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' or 'error'
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
+    setSubmitStatus(null);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch {
-      setSubmitStatus("error");
+      // Simulate API call (replace with your actual form submission logic)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Form submitted:', formData);
+      
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
-      setTimeout(() => setSubmitStatus(""), 5000);
     }
   };
 
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,79 +51,65 @@ const ContactForm = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
-      opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.6
-      }
+      opacity: 1
     }
   };
 
   return (
-    <section id="contact" className="py-20 px-6 bg-gray-50 dark:bg-gray-900 dark-transition">
+    <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 shadow-md z-50 transition-all ">
       <div className="max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            <span className="gradient-text">Let's Connect</span>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Get in Touch
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Ready to bring your ideas to life? Let's discuss your next project
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Have a project in mind or want to discuss potential opportunities? Feel free to reach out!
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Info */}
           <motion.div
             className="space-y-8"
-            variants={containerVariants}
             initial="hidden"
             whileInView="visible"
+            variants={containerVariants}
             viewport={{ once: true }}
           >
-            <motion.div variants={itemVariants}>
-              <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-                Get in Touch
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                I'm always interested in new opportunities and exciting projects. 
-                Whether you have a question or just want to say hi, feel free to reach out!
-              </p>
-            </motion.div>
-
             {/* Contact Methods */}
             <motion.div className="space-y-4" variants={containerVariants}>
               {[
                 {
                   icon: "📧",
                   title: "Email",
-                  value: "your.email@example.com",
-                  link: "mailto:your.email@example.com"
+                  value: "Matiasindrapangestu@gmail.com", // Corrected email typo
+                  link: "mailto:Matiasindrapangestu@gmail.com"
                 },
                 {
                   icon: "📱",
                   title: "Phone",
-                  value: "+1 (555) 123-4567",
-                  link: "tel:+15551234567"
+                  value: "+62 (895) 0521-0036",
+                  link: "tel:+6289505210036"
                 },
                 {
                   icon: "📍",
                   title: "Location",
-                  value: "Jakarta, Indonesia",
-                  link: "#"
+                  value: "Bekasi, Indonesia",
+                  link: "#" // Consider using a proper map link
                 },
                 {
                   icon: "💼",
                   title: "LinkedIn",
                   value: "Connect with me",
-                  link: "https://linkedin.com"
+                  link: "https://www.linkedin.com/in/matiasindrapangestu/"
                 }
               ].map((contact, index) => (
                 <motion.a
@@ -127,6 +118,8 @@ const ContactForm = () => {
                   className="glass rounded-xl p-4 flex items-center space-x-4 card-hover block"
                   variants={itemVariants}
                   whileHover={{ scale: 1.02, x: 10 }}
+                  target={contact.link.startsWith('http') ? "_blank" : undefined} // Open external links in new tab
+                  rel={contact.link.startsWith('http') ? "noopener noreferrer" : undefined}
                 >
                   <span className="text-2xl">{contact.icon}</span>
                   <div>
@@ -152,7 +145,7 @@ const ContactForm = () => {
                   Available for Work
                 </h4>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
+              <p className="light:text-gray-600 dark:text-gray-300 text-sm">
                 Currently accepting new projects and collaborations
               </p>
             </motion.div>
@@ -172,6 +165,7 @@ const ContactForm = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
+                  viewport={{ once: true }} // Added viewport for consistency
                 >
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Full Name *
@@ -187,11 +181,11 @@ const ContactForm = () => {
                     placeholder="Your name"
                   />
                 </motion.div>
-
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email Address *
@@ -208,11 +202,11 @@ const ContactForm = () => {
                   />
                 </motion.div>
               </div>
-
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
               >
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Subject *
@@ -228,11 +222,11 @@ const ContactForm = () => {
                   placeholder="Project inquiry"
                 />
               </motion.div>
-
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
               >
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Message *
@@ -248,11 +242,11 @@ const ContactForm = () => {
                   placeholder="Tell me about your project..."
                 />
               </motion.div>
-
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
+                viewport={{ once: true }}
               >
                 <motion.button
                   type="submit"
@@ -267,7 +261,7 @@ const ContactForm = () => {
                 >
                   {isSubmitting ? (
                     <div className="flex items-center justify-center">
-                      <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                      <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2 animate-spin"></div> {/* Added animate-spin */}
                       Sending...
                     </div>
                   ) : (
@@ -275,7 +269,6 @@ const ContactForm = () => {
                   )}
                 </motion.button>
               </motion.div>
-
               {/* Status Messages */}
               {submitStatus && (
                 <motion.div
