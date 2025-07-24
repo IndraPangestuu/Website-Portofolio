@@ -41,10 +41,10 @@ const Hero = () => {
       style={{ opacity }}
     >
       {/* Animated Background */}
-      <div className="absolute inset-0 animated-gradient"></div>
+      <div className="absolute inset-0 animated-gradient pointer-events-none z-0"></div>
       
       {/* Floating geometric shapes */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <motion.div
           className="absolute w-96 h-96 rounded-full bg-white bg-opacity-10 blur-3xl"
           style={{

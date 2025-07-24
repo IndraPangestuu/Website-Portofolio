@@ -1,99 +1,158 @@
-import React, { useState, useEffect } from "react";
-
-const navItems = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Blog', href: '#blog' },
-  { label: 'Contact', href: '#contact' },
-];
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
-  const [activeSection, setActiveSection] = useState('home');
-  const [isSticky, setIsSticky] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    // Initialize theme based on localStorage or system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
-  }, []);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsSticky(scrollPosition > 50);
+      const currentScrollY = window.scrollY;
 
-      const sections = navItems.map(item => document.getElementById(item.href.substring(1)));
-      const currentSection = sections.find(section => {
-        if (!section) return false;
-        const rect = section.getBoundingClientRect();
-        return rect.top <= 100 && rect.bottom >= 100;
-      });
+      setIsScrolled(currentScrollY > 50);
 
-      if (currentSection) {
-        setActiveSection(currentSection.id);
+      if (currentScrollY < 100 || currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+        setIsMobileMenuOpen(false);
       }
+
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
-  const toggleDarkMode = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDarkMode(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDarkMode(true);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('nav')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
     }
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobileMenuOpen]);
+
+  const navItems = [
+    { name: 'Home', href: '#home' },
+    { name: 'About', href: '#about' },
+    { name: 'Skills', href: '#skills' },
+    { name: 'Projects', href: '#projects' },
+    { name: 'Blog', href: '#blog' },
+    { name: 'Contact', href: '#contact' },
+  ];
+
+  const handleNavClick = (href) => {
+    const el = document.querySelector(href);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <header className={`fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-all ${isSticky ? 'py-2' : 'py-4'}`}>
-      <nav className="max-w-7xl mx-auto flex justify-between items-center px-6">
-        <a href="#home" className="text-xl font-bold text-blue-600">Portfolio</a>
-        <ul className="flex space-x-6 items-center">
-          {navItems.map(item => (
-            <li key={item.label}>
-              <a
-                href={item.href}
-                className={`text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${activeSection === item.href.substring(1) ? 'font-semibold underline' : ''}`}
+    <motion.header
+      className={`fixed top-2 md:top-4 items-center transform -translate-x-1/2 z-[999] transition-all duration-500 ${
+        isScrolled ? 'w-[96%] md:w-[95%] max-w-4xl' : 'w-[94%] md:w-[90%] max-w-5xl'
+      }`}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <nav className="glass-strong rounded-xl px-4 md:px-6 py-3 md:py-4 backdrop-blur-lg border border-white/20 shadow-xl bg-white/10 dark:bg-gray-900/10 relative">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <motion.h1
+            className="text-xl md:text-2xl font-bold gradient-text cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+          >
+            Portfolio
+          </motion.h1>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex space-x-2">
+            {navItems.map((item, index) => (
+              <motion.button
+                key={item.name}
+                onClick={() => handleNavClick(item.href)}
+                className="relative px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-all duration-300 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {item.label}
-              </a>
-            </li>
-          ))}
-          <li>
-            <button
-              onClick={toggleDarkMode}
-              aria-label="Toggle Dark Mode"
-              className="ml-4 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                {item.name}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Mobile Hamburger */}
+          <motion.button
+            className="md:hidden p-2.5 rounded-xl glass hover:bg-white/20 dark:hover:bg-white/10 transition-all duration-300 relative z-[1001]"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <motion.div
+              animate={isMobileMenuOpen ? 'open' : 'closed'}
+              className="w-6 h-6 flex flex-col justify-center items-center"
             >
-              {isDarkMode ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07 5.07l-.7-.7M6.34 6.34l-.7-.7m12.02 12.02l-.7-.7M6.34 17.66l-.7-.7M12 7a5 5 0 000 10 5 5 0 000-10z" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-                </svg>
-              )}
-            </button>
-          </li>
-        </ul>
+              <motion.span
+                className="w-6 h-0.5 bg-gray-700 dark:bg-gray-300 block mb-1"
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: 45, y: 6 },
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                className="w-6 h-0.5 bg-gray-700 dark:bg-gray-300 block mb-1"
+                variants={{
+                  closed: { opacity: 1 },
+                  open: { opacity: 0 },
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                className="w-6 h-0.5 bg-gray-700 dark:bg-gray-300 block"
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: -45, y: -6 },
+                }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.div>
+          </motion.button>
+        </div>
+
+        {/* Dropdown Mobile Nav */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              className="absolute top-full right-4 mt-3 w-48 rounded-xl shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 z-[1000]"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className="w-full text-left px-4 py-3 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                >
+                  {item.name}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
-    </header>
+    </motion.header>
   );
 };
 
