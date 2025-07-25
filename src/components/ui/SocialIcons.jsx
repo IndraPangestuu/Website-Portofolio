@@ -23,7 +23,7 @@ const SocialIcons = ({ className = "" }) => {
     },
     {
       name: 'Instagram',
-      href: 'https://instagram.com/indrapangestu',
+      href: 'https://www.instagram.com/mindrapangestu_/',
       icon: Instagram,
       color: 'hover:text-pink-400'
     },
